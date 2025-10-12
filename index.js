@@ -1,4 +1,4 @@
-
+//https://ecommerce-backend-y1bv.onrender.com/api/user/logout
 const express = require('express');
 const bodyParser = require('body-parser');
 const connectDB = require("./src/config/db");
