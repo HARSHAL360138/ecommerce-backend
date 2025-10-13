@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
 const Token = require("../models/token.model");
+const UserProfile = require("../models/profile.model");
 const { tokenBlacklist } = require("../middlewares/user.middleware");
 
 const ACCESS_TOKEN_SECRET_KEY = process.env.ACCESS_TOKEN_SECRET_KEY;
@@ -136,3 +137,211 @@ exports.profile = async (req, res) => {
 };
 
 
+// // Profile routes
+
+// exports.createProfile = async (req, res) => {
+//   try {
+//     if (!req.user || !req.user.id) {
+//       return res.status(401).json({ message: "Unauthorized: no user info found" });
+//     }
+
+//     const existing = await UserProfile.findOne({ user: req.user.id });
+//     if (existing) {
+//       return res.status(400).json({ message: "Profile already exists" });
+//     }
+
+//     const profile = new UserProfile({ user: req.user.id, ...req.body });
+//     await profile.save();
+
+//     res.status(201).json({ message: "Profile created successfully", profile });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// };
+
+
+
+// exports.getProfile = async (req, res) => {
+//   try {
+//     const profile = await UserProfile.findOne({ user: req.user.id }).populate("user", "name email");
+//     if (!profile) return res.status(404).json({ message: "Profile not found" });
+
+//     res.status(200).json({ message: "Profile fetched successfully", profile });
+//   } catch (err) {
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// };
+
+
+// exports.editProfile = async (req, res) => {
+//   try {
+//     const updates = req.body;
+//     let profile = await UserProfile.findOne({ user: req.user.id });
+
+//     if (!profile) {
+//       profile = new UserProfile({ user: req.user.id, ...updates });
+//     } else {
+//       Object.assign(profile, updates);
+//     }
+
+//     await profile.save();
+//     res.status(200).json({ message: "Profile updated successfully", profile });
+//   } catch (err) {
+//     res.status(500).json({ message: "Error updating profile", error: err.message });
+//   }
+// };
+
+
+
+// // 🔴 DELETE PROFILE
+// exports.deleteProfile = async (req, res) => {
+//   try {
+//     const profile = await UserProfile.findOneAndDelete({ user: req.user.id });
+
+//     if (!profile) {
+//       return res.status(404).json({ message: "Profile not found" });
+//     }
+
+//     res.json({ message: "Profile deleted successfully" });
+//   } catch (err) {
+//     res.status(500).json({ message: "Error deleting profile", error: err.message });
+//   }
+// };
+
+
+
+
+
+// 🟢 CREATE PROFILE
+exports.createProfile = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const existing = await UserProfile.findOne({ user: req.user.id });
+    if (existing) {
+      return res.status(400).json({ message: "Profile already exists" });
+    }
+
+    const profile = new UserProfile({ user: req.user.id, ...req.body });
+    await profile.save();
+
+    res.status(201).json({ message: "Profile created successfully", profile });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+// 🟡 EDIT PROFILE
+exports.editProfile = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const updates = req.body;
+
+    let profile = await UserProfile.findOne({ user: req.user.id });
+    if (!profile) {
+      // Auto-create profile if not exists
+      profile = new UserProfile({ user: req.user.id, ...updates });
+    } else {
+      Object.assign(profile, updates);
+    }
+
+    await profile.save();
+    res.status(200).json({ message: "Profile updated successfully", profile });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error updating profile", error: err.message });
+  }
+};
+
+// 🔹 GET PROFILE (always return name/email)
+exports.getProfile = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const profile = await UserProfile.findOne({ user: req.user.id }).populate("user", "name email");
+
+    if (profile) {
+      return res.status(200).json({ message: "Profile fetched successfully", profile });
+    }
+
+    // Profile not exists → return basic user info
+    const user = await User.findById(req.user.id).select("name email");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    return res.status(200).json({
+      message: "Profile not created yet, returning basic user info",
+      profile: {
+        user: user,
+        phone: null,
+        gender: null,
+        dateOfBirth: null,
+        profileImage: null,
+        addresses: [],
+        wishlist: [],
+        cart: [],
+        orderHistory: []
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+// 🔴 DELETE PROFILE
+exports.deleteProfile = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const profile = await UserProfile.findOneAndDelete({ user: req.user.id });
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    res.status(200).json({ message: "Profile deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error deleting profile", error: err.message });
+  }
+};
+
+
+
+// 🔴 DELETE ACCOUNT
+exports.deleteAccount = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Delete UserProfile (if exists)
+    await UserProfile.findOneAndDelete({ user: req.user.id });
+
+    // Delete User
+    const deletedUser = await User.findByIdAndDelete(req.user.id);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Optional: clear all refresh tokens for this user
+    const Token = require("../models/token.model");
+    await Token.deleteMany({ userId: req.user.id });
+
+    res.status(200).json({ message: "Account deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error deleting account", error: err.message });
+  }
+};
