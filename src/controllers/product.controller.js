@@ -1,71 +1,144 @@
 const Product = require("../models/product.model");
+require("../models/review.model");  // Ensure Review model is registered
+require("../models/comment.model"); // Ensure Comment model is registered
+require("../models/variant.model");
 
-// 🟢 CREATE PRODUCT
+// Create a new product
 exports.createProduct = async (req, res) => {
   try {
-    const { name, description, price, stock, category, images } = req.body;
-
-    const product = new Product({ name, description, price, stock, category, images });
-    await product.save();
-
-    res.status(201).json({ message: "Product created successfully", product });
+    const product = new Product(req.body);
+    const savedProduct = await product.save();
+    res.status(201).json(savedProduct);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error creating product", error: err.message });
+    res.status(400).json({ error: err.message });
   }
 };
 
-// 🟢 GET ALL PRODUCTS
+// Get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.status(200).json({ message: "Products fetched successfully", products });
+    const products = await Product.find()
+      .populate("variants")
+      .populate("reviews")
+      .populate("comments");
+    res.status(200).json(products);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching products", error: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
-// 🟢 GET SINGLE PRODUCT
+// Get single product by ID and increment views
 exports.getProductById = async (req, res) => {
   try {
-    const productId = req.params.id;
-    const product = await Product.findById(productId);
-    if (!product) return res.status(404).json({ message: "Product not found" });
+    const product = await Product.findById(req.params.id)
+      .populate("variants")
+      .populate("reviews")
+      .populate("comments");
+    if (!product) return res.status(404).json({ error: "Product not found" });
 
-    res.status(200).json({ message: "Product fetched successfully", product });
+    // Increment views
+    product.views += 1;
+    await product.save();
+
+    res.status(200).json(product);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching product", error: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
-// 🟡 UPDATE PRODUCT
+// Update product by ID
 exports.updateProduct = async (req, res) => {
   try {
-    const productId = req.params.id;
-    const updates = req.body;
-
-    const product = await Product.findByIdAndUpdate(productId, updates, { new: true });
-    if (!product) return res.status(404).json({ message: "Product not found" });
-
-    res.status(200).json({ message: "Product updated successfully", product });
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedProduct) return res.status(404).json({ error: "Product not found" });
+    res.status(200).json(updatedProduct);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error updating product", error: err.message });
+    res.status(400).json({ error: err.message });
   }
 };
 
-// 🔴 DELETE PRODUCT
+// Delete product by ID
 exports.deleteProduct = async (req, res) => {
   try {
-    const productId = req.params.id;
-    const product = await Product.findByIdAndDelete(productId);
-    if (!product) return res.status(404).json({ message: "Product not found" });
-
+    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+    if (!deletedProduct) return res.status(404).json({ error: "Product not found" });
     res.status(200).json({ message: "Product deleted successfully" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error deleting product", error: err.message });
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Mark/unmark product as main
+exports.setMainProduct = async (req, res) => {
+  try {
+    const { isMain } = req.body;
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      { isMain },
+      { new: true }
+    );
+    if (!updatedProduct) return res.status(404).json({ error: "Product not found" });
+    res.status(200).json(updatedProduct);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+// Increment share counts
+exports.incrementShare = async (req, res) => {
+  try {
+    const { platform } = req.body; 
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ error: "Product not found" });
+
+    product.share.totalShares += 1;
+    if (platform && product.share.platformShares.hasOwnProperty(platform)) {
+      product.share.platformShares[platform] += 1;
+    } else if (platform) {
+      product.share.platformShares.other += 1;
+    }
+
+    await product.save();
+    res.status(200).json(product.share);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+/**
+ * Update stock count based on order action
+ * @param {String} productId - Product ID
+ * @param {Number} quantity - Quantity affected
+ * @param {String} action - 'book', 'cancelBooking', 'deliver', 'cancelOrder'
+ */
+exports.updateStock = async (productId, quantity, action) => {
+  try {
+    const product = await Product.findById(productId);
+    if (!product) throw new Error("Product not found");
+
+    switch (action) {
+      case "book":
+      case "deliver":
+        product.stock = (product.stock || 0) - quantity;
+        break;
+
+      case "cancelBooking":
+      case "cancelOrder":
+        product.stock = (product.stock || 0) + quantity;
+        break;
+
+      default:
+        throw new Error("Invalid stock action");
+    }
+
+    if (product.stock < 0) product.stock = 0; 
+    await product.save();
+    return product;
+  } catch (err) {
+    throw err;
   }
 };
