@@ -7,7 +7,7 @@ const variantSchema = new mongoose.Schema(
     size: { type: String },
     material: { type: String },
     price: { type: Number },
-    stock: { type: Number },
+    stock: { type: Number, default: 0 },
     images: [{ type: String }] // Variant-specific images
   },
   { timestamps: true }
