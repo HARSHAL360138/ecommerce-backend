@@ -24,4 +24,12 @@ router.patch("/:id/update-stock", async (req, res) => {
   }
 });
 
+
+
+// 🟢 Get all categories with their latest product image
+router.get("/categories/latest", productController.getCategoriesWithLatestProduct);
+
+// 🟢 Get all products of a specific category
+router.get("/category/:category", productController.getProductsByCategory);
+
 module.exports = router;

@@ -142,3 +142,66 @@ exports.updateStock = async (productId, quantity, action) => {
     throw err;
   }
 };
+
+
+
+
+///////////////category with products///////////////
+
+// Get unique categories with latest product image
+exports.getCategoriesWithLatestProduct = async (req, res) => {
+  try {
+    // Find all unique categories
+    const categories = await Product.aggregate([
+      {
+        $sort: { createdAt: -1 } // latest first
+      },
+      {
+        $group: {
+          _id: "$category",
+          latestProduct: { $first: "$$ROOT" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          category: "$_id",
+          latestProductName: "$latestProduct.name",
+          latestProductImage: { $arrayElemAt: ["$latestProduct.images", 0] },
+          latestProductId: "$latestProduct._id",
+          createdAt: "$latestProduct.createdAt"
+        }
+      },
+      {
+        $sort: { category: 1 } // alphabetically sort
+      }
+    ]);
+
+    res.status(200).json(categories);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Get all products in a specific category
+exports.getProductsByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const products = await Product.find({ category })
+      .populate("variants")
+      .populate("reviews")
+      .populate("comments")
+      .sort({ createdAt: -1 });
+
+    if (!products.length)
+      return res.status(404).json({ error: "No products found in this category" });
+
+    res.status(200).json({
+      category,
+      totalProducts: products.length,
+      products
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
