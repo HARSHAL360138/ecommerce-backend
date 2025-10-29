@@ -92,3 +92,30 @@ exports.clearCart = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+
+// 🟢 GET CART COUNT (For Navbar)
+exports.getCartCount = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id)
+      return res.status(401).json({ message: "Unauthorized" });
+
+    const cart = await Cart.findOne({ user: req.user.id }).populate("products.product");
+
+    // Count only valid products that exist
+    const count = cart
+      ? cart.products.filter(p => p.product && p.product._id).length
+      : 0;
+
+    res.status(200).json({
+      message: "Cart count fetched successfully",
+      count,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Server error while fetching cart count",
+      error: err.message,
+    });
+  }
+};

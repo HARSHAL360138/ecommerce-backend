@@ -18,4 +18,6 @@ router.post("/remove", authMiddleware, cartController.removeFromCart);
 // Clear cart
 router.delete("/clear", authMiddleware, cartController.clearCart);
 
+router.get("/count", authMiddleware, cartController.getCartCount);
+
 module.exports = router;
