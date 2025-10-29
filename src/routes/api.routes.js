@@ -10,6 +10,8 @@ const wishlistRouter = require("./wishlist.routes");
 const cartRouter = require("./cart.routes");
 const orderRouter = require("./order.routes");
 const buyNowRouter = require("./buynow.routes");
+const newsletterRouter = require("./newsletter.routes");
+
 
 router.use("/user", userRouter);
 router.use("/product", productRouter);
@@ -20,5 +22,6 @@ router.use("/wishlist", wishlistRouter);
 router.use("/cart", cartRouter);
 router.use("/orders", orderRouter);
 router.use("/buynow", buyNowRouter);
+router.use("/newsletter", newsletterRouter);
 
 module.exports = router;
