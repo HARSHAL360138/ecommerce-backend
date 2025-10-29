@@ -364,10 +364,10 @@ exports.updateStock = async (productId, quantity, action) => {
   }
 };
 
-///////////////category with products///////////////
+///////////////category with products start///////////////
 
 // Get unique categories with latest product image
-exports.getCategoriesWithLatestProduct = async (req, res) => {
+exports.getCategoryWithLatestProduct = async (req, res) => {
   try {
     // Find all unique categories
     const categories = await Product.aggregate([
@@ -401,7 +401,7 @@ exports.getCategoriesWithLatestProduct = async (req, res) => {
   }
 };
 
-// Get all products in a specific category
+// // Get all products in a specific category
 exports.getProductsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
@@ -423,3 +423,128 @@ exports.getProductsByCategory = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////
+// 1️⃣  Get all unique categories (with latest product)
+/////////////////////////////////////////////
+exports.getCategoriesWithLatestProduct = async (req, res) => {
+  try {
+    const categories = await Product.aggregate([
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$category",
+          latestProduct: { $first: "$$ROOT" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          category: "$_id",
+          latestProductName: "$latestProduct.name",
+          latestProductImage: { $arrayElemAt: ["$latestProduct.images", 0] },
+          latestProductId: "$latestProduct._id",
+          createdAt: "$latestProduct.createdAt"
+        }
+      },
+      { $sort: { category: 1 } }
+    ]);
+
+    if (!categories.length)
+      return res.status(404).json({ error: "No categories found" });
+
+    // Return categories list for user to click
+    res.status(200).json({
+      totalCategories: categories.length,
+      categories
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+/////////////////////////////////////////////
+// 2️⃣  Get all subcategories for a category
+/////////////////////////////////////////////
+exports.getSubcategoriesByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+
+    const subcategories = await Product.aggregate([
+      { $match: { category } },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$subCategory",
+          latestProduct: { $first: "$$ROOT" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          subCategory: "$_id",
+          latestProductName: "$latestProduct.name",
+          latestProductImage: { $arrayElemAt: ["$latestProduct.images", 0] },
+          latestProductId: "$latestProduct._id",
+          createdAt: "$latestProduct.createdAt"
+        }
+      },
+      { $sort: { subCategory: 1 } }
+    ]);
+
+    if (!subcategories.length)
+      return res.status(404).json({ error: "No subcategories found for this category" });
+
+    // Return subcategory list for user to click
+    res.status(200).json({
+      category,
+      totalSubcategories: subcategories.length,
+      subcategories
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+/////////////////////////////////////////////
+// 3️⃣  Get all products for a subcategory
+/////////////////////////////////////////////
+exports.getProductsBySubcategory = async (req, res) => {
+  try {
+    const { category, subCategory } = req.params;
+
+    const products = await Product.find({ category, subCategory })
+      .populate("variants")
+      .populate("reviews")
+      .populate("comments")
+      .sort({ createdAt: -1 });
+
+    if (!products.length)
+      return res.status(404).json({ error: "No products found in this subcategory" });
+
+    // Return product list for user to click/view
+    res.status(200).json({
+      category,
+      subCategory,
+      totalProducts: products.length,
+      products
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+///////////////category with products end///////////////
