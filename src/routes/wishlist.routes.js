@@ -15,4 +15,7 @@ router.post("/remove", authMiddleware, wishlistController.removeFromWishlist);
 // Clear wishlist
 router.delete("/clear", authMiddleware, wishlistController.clearWishlist);
 
+// ✅ Add new wishlist count route
+router.get("/count", authMiddleware, wishlistController.getWishlistCount);
+
 module.exports = router;

@@ -79,3 +79,70 @@ exports.clearWishlist = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+
+
+// // 🟢 GET WISHLIST COUNT (For Navbar)
+// exports.getWishlistCount = async (req, res) => {
+//   try {
+//     if (!req.user || !req.user.id)
+//       return res.status(401).json({ message: "Unauthorized" });
+
+//     const wishlist = await Wishlist.findOne({ user: req.user.id });
+
+//     const count = wishlist ? wishlist.products.length : 0;
+
+//     res.status(200).json({
+//       message: "Wishlist count fetched successfully",
+//       count,
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({
+//       message: "Server error while fetching wishlist count",
+//       error: err.message,
+//     });
+//   }
+// };
+
+
+
+
+
+
+
+
+
+
+// 🟢 GET WISHLIST COUNT (For Navbar)
+exports.getWishlistCount = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id)
+      return res.status(401).json({ message: "Unauthorized" });
+
+    const wishlist = await Wishlist.findOne({ user: req.user.id }).populate("products.product");
+
+    if (!wishlist) {
+      return res.status(200).json({
+        message: "Wishlist count fetched successfully",
+        count: 0,
+      });
+    }
+
+    // ✅ Count only valid products (where product exists)
+    const validProducts = wishlist.products.filter(
+      (p) => p.product && p.product._id
+    );
+
+    res.status(200).json({
+      message: "Wishlist count fetched successfully",
+      count: validProducts.length,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Server error while fetching wishlist count",
+      error: err.message,
+    });
+  }
+};
