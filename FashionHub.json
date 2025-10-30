@@ -1,0 +1,336 @@
+{
+  "source": "fashionhub_internal_faq",
+  "last_updated": "2025-10-30T00:00:00Z",
+  "company": {
+    "name": "FashionHub",
+    "description": "FashionHub is an e-commerce platform for modern apparel, accessories, and seasonal collections focused on style, value, and fast delivery.",
+    "website": "https://www.fashionhub.example"
+  },
+  "owners": [
+    {
+      "name": "Harshal Khapekar",
+      "role": "Co-founder / CEO",
+      "contact": {
+        "email": "harshal@fashionhub.example",
+        "phone": "+91-XXXXXXXXXX"
+      }
+    },
+    {
+      "name": "Disha Raut",
+      "role": "Co-founder / COO",
+      "contact": {
+        "email": "disha@fashionhub.example",
+        "phone": "+91-XXXXXXXXXX"
+      }
+    },
+    {
+      "name": "Priya Koche",
+      "role": "Head of Product",
+      "contact": {
+        "email": "priya@fashionhub.example",
+        "phone": "+91-XXXXXXXXXX"
+      }
+    },
+    {
+      "name": "Laxmi Bagde",
+      "role": "Head of Marketing",
+      "contact": {
+        "email": "laxmi@fashionhub.example",
+        "phone": "+91-XXXXXXXXXX"
+      }
+    }
+  ],
+  "products": [
+    {
+      "id": "FH-TS-001",
+      "name": "Summer Breeze Floral Dress",
+      "category": "Dresses",
+      "price": 2499.0,
+      "currency": "INR",
+      "description": "Lightweight floral midi dress made from breathable cotton blend — perfect for summer outings.",
+      "sku": "FH-DR-2025-001",
+      "sizes": ["S", "M", "L", "XL"],
+      "colors": ["White/Floral", "Peach/Floral"],
+      "stock_status": "in_stock",
+      "available_from": "2025-04-01T00:00:00Z",
+      "images": ["/assets/products/FH-TS-001-1.jpg", "/assets/products/FH-TS-001-2.jpg"]
+    },
+    {
+      "id": "FH-SH-010",
+      "name": "Classic High-Waist Denim Shorts",
+      "category": "Bottoms",
+      "price": 1499.0,
+      "currency": "INR",
+      "description": "High-rise denim shorts with a comfortable stretch fit and distressed finish.",
+      "sku": "FH-BT-2025-010",
+      "sizes": ["S", "M", "L", "XL"],
+      "colors": ["Blue Denim"],
+      "stock_status": "in_stock",
+      "available_from": "2025-03-10T00:00:00Z",
+      "images": ["/assets/products/FH-SH-010-1.jpg"]
+    },
+    {
+      "id": "FH-SN-100",
+      "name": "Strappy Flat Sandals",
+      "category": "Footwear",
+      "price": 999.0,
+      "currency": "INR",
+      "description": "Comfortable flat sandals with adjustable straps and cushioned footbed.",
+      "sku": "FH-FW-2025-100",
+      "sizes": ["6", "7", "8", "9"],
+      "colors": ["Beige", "Tan", "Black"],
+      "stock_status": "low_stock",
+      "available_from": "2025-02-15T00:00:00Z",
+      "images": ["/assets/products/FH-SN-100-1.jpg"]
+    }
+  ],
+  "services": [
+    {
+      "id": "SVC-01",
+      "name": "Personal Styling Advice",
+      "description": "One-on-one styling suggestions delivered via chat. The AI stylist recommends outfits and product pairings based on user preferences.",
+      "availability": "24/7 (AI), human stylist support Mon-Fri 10:00-18:00 IST",
+      "how_to_use": "Ask the chatbot about occasion, size, and preferred styles; AI returns tailored outfit suggestions and product links."
+    },
+    {
+      "id": "SVC-02",
+      "name": "Gift Wrap & Personalized Note",
+      "description": "Gift wrapping service with an option to add a personalized note at checkout.",
+      "availability": "All seasons",
+      "cost": {
+        "type": "flat",
+        "amount": 99.0,
+        "currency": "INR"
+      }
+    },
+    {
+      "id": "SVC-03",
+      "name": "Easy Returns & Exchange",
+      "description": "30-day returns and exchange policy on eligible items.",
+      "policy_summary": "Items must be unworn, unwashed, and in original packaging. Returns processed within 5–7 business days after pickup or drop-off confirmation."
+    }
+  ],
+  "offers": [
+    {
+      "id": "OFFER-SUMMER2025",
+      "title": "Summer Launch Sale",
+      "details": "Up to 30% off on selected summer collection items.",
+      "start_date": "2025-04-01T09:00:00Z",
+      "end_date": "2025-04-15T23:59:59Z",
+      "applicability": "Selected SKUs only. Discount applied at checkout."
+    },
+    {
+      "id": "OFFER-FESTIVE2025",
+      "title": "Festive Combo Offer",
+      "details": "Buy 2 get 1 at 50% off on accessories.",
+      "start_date": "2025-10-15T00:00:00Z",
+      "end_date": "2025-11-05T23:59:59Z",
+      "applicability": "Accessories category only."
+    },
+    {
+      "id": "OFFER-FIRSTBUY",
+      "title": "New Customer Welcome",
+      "details": "Flat 10% off on first purchase (max discount INR 500).",
+      "start_date": "2024-01-01T00:00:00Z",
+      "end_date": "2026-12-31T23:59:59Z",
+      "applicability": "Automatically applied for new registered customers."
+    }
+  ],
+  "payment_methods": {
+    "supported": [
+      "UPI",
+      "Credit/Debit Cards",
+      "Wallets",
+      "Netbanking",
+      "Cash on Delivery",
+      "EMI"
+    ],
+    "refund_policy": "Refunds processed within 7–10 business days to the original payment method. UPI and wallet refunds are usually faster (2–5 days)."
+  },
+  "delivery": {
+    "standard": "1–2 days within city, 3–7 days intercity.",
+    "express": "Same-day or next-day (selected cities).",
+    "international": "7–21 business days.",
+    "tracking": {
+      "providers": ["DHL", "BlueDart", "Delhivery", "Shiprocket"],
+      "notifications": "SMS and email updates sent after dispatch."
+    }
+  },
+  "customer_service": {
+    "availability": "24/7 chatbot + phone/email support.",
+    "email": "support@fashionhub.example",
+    "phone": "+91-1800-FASHION",
+    "return_policy": "30-day return/exchange on eligible products.",
+    "sla": "Responses within 24 hours (email), immediate for chat support."
+  },
+  "celebrity_investors": {
+    "note": "The following entries are fictional sample data for demonstration only.",
+    "verified": [
+      {
+        "name": "Deepika Padukone",
+        "profession": "Actress, Entrepreneur",
+        "bio_short": "Bollywood actress and global fashion icon known for her timeless style.",
+        "investment_details": {
+          "amount_inr": 50000000,
+          "date": "2024-08-10T00:00:00Z",
+          "notes": "Joined FashionHub as strategic brand ambassador and investor supporting sustainable fashion."
+        },
+        "notable_works": ["Padmaavat", "Chhapaak", "Pathaan"]
+      },
+      {
+        "name": "Virat Kohli",
+        "profession": "Cricketer",
+        "bio_short": "Indian cricket star and fitness icon.",
+        "investment_details": {
+          "amount_inr": 40000000,
+          "date": "2024-09-20T00:00:00Z",
+          "notes": "Invested in FashionHub’s activewear and sports-lifestyle category expansion."
+        },
+        "notable_works": ["Indian National Cricket Team", "RCB IPL Franchise"]
+      },
+      {
+        "name": "Alia Bhatt",
+        "profession": "Actress, Producer",
+        "bio_short": "Award-winning Bollywood actress and trendsetter.",
+        "investment_details": {
+          "amount_inr": 35000000,
+          "date": "2025-01-05T00:00:00Z",
+          "notes": "Invested to promote FashionHub’s eco-friendly clothing line."
+        },
+        "notable_works": ["Raazi", "Gangubai Kathiawadi", "Rocky Aur Rani Ki Prem Kahani"]
+      },
+      {
+        "name": "Ranveer Singh",
+        "profession": "Actor",
+        "bio_short": "Known for his bold and energetic fashion sense.",
+        "investment_details": {
+          "amount_inr": 30000000,
+          "date": "2025-03-15T00:00:00Z",
+          "notes": "Collaborated with FashionHub for a youth streetwear line."
+        },
+        "notable_works": ["Gully Boy", "Bajirao Mastani", "83"]
+      },
+      {
+        "name": "Kiara Advani",
+        "profession": "Actress",
+        "bio_short": "Bollywood actress known for her chic and minimal fashion.",
+        "investment_details": {
+          "amount_inr": 20000000,
+          "date": "2025-05-22T00:00:00Z",
+          "notes": "Invested in FashionHub’s accessories and women’s wear division."
+        },
+        "notable_works": ["Kabir Singh", "Shershaah", "Bhool Bhulaiyaa 2"]
+      }
+    ]
+  },
+  "faq": [
+    {
+      "question": "Who are the investors in FashionHub?",
+      "answer": "FashionHub has celebrity investors including Deepika Padukone, Virat Kohli, Alia Bhatt, Ranveer Singh, and Kiara Advani, supporting sustainable and trendy fashion initiatives."
+    },
+    {
+      "question": "How long does delivery take?",
+      "answer": "Standard delivery takes 3–7 days depending on location; express delivery options are available in select cities."
+    },
+    {
+      "question": "What payment methods are accepted?",
+      "answer": "We accept UPI, cards, wallets, net banking, cash on delivery, and EMI options."
+    },
+    {
+      "question": "Who are the founders of FashionHub?",
+      "answer": "FashionHub was founded by Harshal Khapekar, Disha Raut, Priya Koche, and Laxmi Bagde."
+    },
+    {
+      "question": "What is the return policy?",
+      "answer": "We offer a 30-day return/exchange policy on eligible items. Items must be unused and in original packaging."
+    },
+    {
+      "question": "When do the offers start?",
+      "answer": "The Summer Launch Sale starts on April 1, 2025, and the Festive Combo Offer begins on October 15, 2025."
+    },
+    {
+      "question": "How can I track my order?",
+      "answer": "Once shipped, you’ll receive an SMS and email with tracking details from our delivery partners like BlueDart or Delhivery."
+    },
+    {
+      "question": "Can I cancel my order?",
+      "answer": "Orders can be cancelled before they are shipped. Go to 'My Orders' and click 'Cancel'. If already shipped, you can refuse delivery."
+    },
+    {
+      "question": "How do I apply a coupon code?",
+      "answer": "You can enter your coupon code at checkout before making the payment. The discount will be automatically applied if valid."
+    },
+    {
+      "question": "Does FashionHub have a mobile app?",
+      "answer": "Yes, the FashionHub app is available for Android and iOS users. Download it from Google Play Store or Apple App Store."
+    },
+    {
+      "question": "How do I create an account on FashionHub?",
+      "answer": "Click on the 'Sign Up' button on the homepage, enter your email or mobile number, and set a password to create your account."
+    },
+    {
+      "question": "Do you offer student discounts?",
+      "answer": "Yes, verified students get 15% off on select collections. Verification required through your student email ID."
+    },
+    {
+      "question": "Can I exchange a size after purchase?",
+      "answer": "Yes, you can request an exchange for a different size within 30 days if the item is in stock."
+    },
+    {
+      "question": "What is the minimum order for free delivery?",
+      "answer": "Orders above ₹799 are eligible for free standard delivery. For smaller orders, a ₹49 shipping fee applies."
+    },
+    {
+      "question": "Do you deliver internationally?",
+      "answer": "Yes, we ship to over 40 countries. Delivery usually takes 7–21 business days depending on customs clearance."
+    },
+    {
+      "question": "How do I get updates on new collections?",
+      "answer": "Subscribe to our newsletter or follow us on Instagram and Facebook for new launches and exclusive previews."
+    },
+    {
+      "question": "What should I do if I received a damaged product?",
+      "answer": "Please report it within 48 hours via our chatbot or email at support@fashionhub.example. We’ll arrange a replacement or refund."
+    },
+    {
+      "question": "Do you have a loyalty or rewards program?",
+      "answer": "Yes, our FashionHub Rewards lets you earn points for every purchase. Points can be redeemed for discounts on future orders."
+    },
+    {
+      "question": "Is my payment information secure?",
+      "answer": "Absolutely. All payments are processed through secure, encrypted gateways compliant with PCI-DSS standards."
+    },
+    {
+      "question": "Can I gift someone directly through FashionHub?",
+      "answer": "Yes, you can choose the gift wrap option at checkout and add a personalized note for your recipient."
+    },
+    {
+      "question": "What if my refund hasn’t arrived?",
+      "answer": "Refunds take 7–10 business days to reflect. If delayed, please contact support with your order ID for assistance."
+    },
+    {
+      "question": "Do you sell men’s fashion too?",
+      "answer": "Yes, our men’s collection includes shirts, t-shirts, jeans, footwear, and accessories."
+    },
+    {
+      "question": "Does FashionHub offer cashbacks?",
+      "answer": "Yes, select UPI and wallet payments may offer instant cashback during promotional campaigns."
+    },
+    {
+      "question": "What is FashionHub Wallet?",
+      "answer": "It’s your in-app digital wallet where you can store refunds, cashback, and make instant payments for future purchases."
+    },
+    {
+      "question": "Can I talk to a real stylist?",
+      "answer": "Yes, human stylists are available Monday to Friday between 10 AM and 6 PM IST for premium users."
+    },
+    {
+      "question": "Do you provide eco-friendly packaging?",
+      "answer": "Yes, 70% of our packaging is recyclable and we are moving towards 100% sustainable materials by 2026."
+    }
+  ],
+  "metadata": {
+    "usage_instructions": "Use this JSON as your chatbot knowledge base for FashionHub. The chatbot should fetch contextually relevant data when users ask about products, delivery, offers, payments, or investors.",
+    "source_notes": "Fictional celebrity investment data for demo use only."
+  }
+}
