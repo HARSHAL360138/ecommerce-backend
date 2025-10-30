@@ -1,9 +1,11 @@
 const axios = require("axios");
+const dotenv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
-const dotenv = require("dotenv");
-
 dotenv.config();
+
+const OPEN_ROUTER_API_KEY = process.env.OPEN_ROUTER_API_KEY || "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";
+
 
 const fashionhubDataPath = path.join(__dirname, "..", "..", "FashionHub.json");
 let fashionhubData = {};
@@ -106,7 +108,7 @@ exports.chatWithAI = async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer ${process.env.OPEN_ROUTER_API_KEY}`,
+          Authorization: `Bearer ${OPEN_ROUTER_API_KEY}`,
           "Content-Type": "application/json",
         },
       }
