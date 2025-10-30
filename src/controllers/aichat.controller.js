@@ -1,8 +1,10 @@
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
+const dotenv = require("dotenv");
 
-// const fashionhubDataPath = path.join(__dirname, "..", "FashionHub.json");
+dotenv.config();
+
 const fashionhubDataPath = path.join(__dirname, "..", "..", "FashionHub.json");
 let fashionhubData = {};
 
