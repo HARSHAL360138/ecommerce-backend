@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 dotenv.config();
 
-const OPEN_ROUTER_API_KEY = process.env.OPEN_ROUTER_API_KEY || "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";
+const OPEN_ROUTER_API_KEY = process.env.OPEN_ROUTER_API_KEY || "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";
 
 
 const fashionhubDataPath = path.join(__dirname, "..", "..", "FashionHub.json");
