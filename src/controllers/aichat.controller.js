@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 // const fashionhubDataPath = path.join(__dirname, "..", "FashionHub.json");
-const fashionhubDataPath = path.join(__dirname, "..", "src", "FashionHub.json");
+const fashionhubDataPath = path.join(__dirname, "..", "..", "FashionHub.json");
 let fashionhubData = {};
 
 try {
