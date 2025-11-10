@@ -274,6 +274,149 @@
 
 
 
+// const Order = require("../models/order.model");
+// const Cart = require("../models/cart.model");
+// const Product = require("../models/product.model");
+
+// // 🟢 PLACE ORDER (from cart)
+// exports.placeOrder = async (req, res) => {
+//   try {
+//     const { shippingAddress, paymentMethod } = req.body;
+
+//     // Get user's cart
+//     const cart = await Cart.findOne({ user: req.user.id }).populate("products.product");
+//     if (!cart || cart.products.length === 0) {
+//       return res.status(400).json({ message: "Cart is empty" });
+//     }
+
+//     // Calculate total amount safely using basePrice
+//     const totalAmount = cart.products.reduce((sum, item) => {
+//       const price = item.product.basePrice || 0;
+//       return sum + price * item.quantity;
+//     }, 0);
+
+//     // Prepare order products
+//     const orderProducts = cart.products.map(item => ({
+//       product: item.product._id,
+//       quantity: item.quantity,
+//       price: item.product.basePrice || 0
+//     }));
+
+//     // Create order
+//     const order = new Order({
+//       user: req.user.id,
+//       products: orderProducts,
+//       totalAmount,
+//       shippingAddress,
+//       paymentMethod,
+//       status: "Pending"
+//     });
+
+//     await order.save();
+
+//     // Decrease product stock
+//     for (const item of cart.products) {
+//       const product = await Product.findById(item.product._id);
+//       if (product) {
+//         product.stock = Math.max(0, product.stock - item.quantity);
+//         await product.save();
+//       }
+//     }
+
+//     // Clear cart after placing order
+//     cart.products = [];
+//     await cart.save();
+
+//     res.status(201).json({ message: "Order placed successfully", order });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// };
+
+// // 🟢 GET USER ORDERS
+// exports.getUserOrders = async (req, res) => {
+//   try {
+//     const orders = await Order.find({ user: req.user.id }).populate("products.product");
+//     res.status(200).json({ message: "Orders fetched successfully", orders });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// };
+
+// // 🟢 GET SINGLE ORDER
+// exports.getOrderById = async (req, res) => {
+//   try {
+//     const order = await Order.findOne({ _id: req.params.id, user: req.user.id }).populate("products.product");
+//     if (!order) return res.status(404).json({ message: "Order not found" });
+
+//     res.status(200).json({ message: "Order fetched successfully", order });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// };
+
+// // 🟡 UPDATE ORDER STATUS (admin or user if allowed)
+// exports.updateOrderStatus = async (req, res) => {
+//   try {
+//     const { status } = req.body;
+
+//     const order = await Order.findById(req.params.id);
+//     if (!order) return res.status(404).json({ message: "Order not found" });
+
+//     order.status = status;
+//     await order.save();
+
+//     res.status(200).json({ message: "Order status updated successfully", order });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// };
+
+// // 🔴 CANCEL ORDER (Restore stock)
+// exports.cancelOrder = async (req, res) => {
+//   try {
+//     const order = await Order.findOne({ _id: req.params.id, user: req.user.id }).populate("products.product");
+//     if (!order) return res.status(404).json({ message: "Order not found" });
+
+//     // Restore stock for each product in the order
+//     for (const item of order.products) {
+//       const product = await Product.findById(item.product._id);
+//       if (product) {
+//         product.stock += item.quantity;
+//         await product.save();
+//       }
+//     }
+
+//     order.status = "Cancelled";
+//     await order.save();
+
+//     res.status(200).json({ message: "Order cancelled successfully", order });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const Order = require("../models/order.model");
 const Cart = require("../models/cart.model");
 const Product = require("../models/product.model");
@@ -398,5 +541,80 @@ exports.cancelOrder = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+// 🟢 USER SUBMITS PAYMENT DETAILS (after scanning QR)
+exports.submitPaymentDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { transactionId, amountPaid } = req.body;
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.paymentStatus === "Success") {
+      return res.status(400).json({ message: "Payment already confirmed" });
+    }
+
+    order.transactionId = transactionId;
+    order.amountPaid = amountPaid;
+    order.paymentStatus = "Pending"; // waiting for admin confirmation
+    await order.save();
+
+    res.status(200).json({
+      message: "Payment details submitted successfully, awaiting admin confirmation.",
+      order,
+    });
+  } catch (error) {
+    console.error("Error submitting payment details:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// 🟢 ADMIN GETS ALL PENDING PAYMENTS
+exports.getAllPendingPayments = async (req, res) => {
+  try {
+    const orders = await Order.find({ paymentStatus: "Pending", transactionId: { $ne: null } })
+      .populate({
+        path: "user",
+        select: "name email profileImage",
+      })
+      .populate({
+        path: "products.product",
+        select: "name description images price",
+      })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error fetching pending payments:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// 🟢 ADMIN CONFIRMS PAYMENT
+exports.confirmPayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.paymentStatus = "Success";
+    order.status = "Processing";
+    await order.save();
+
+    res.status(200).json({
+      message: "Payment confirmed successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Error confirming payment:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
