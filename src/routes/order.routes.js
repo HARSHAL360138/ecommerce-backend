@@ -68,3 +68,4 @@ router.get("/admin/payments/all", authMiddleware, orderController.getAllPendingP
 router.put("/admin/:id/confirm-payment", authMiddleware, orderController.confirmPayment);
 
 module.exports = router;
+
